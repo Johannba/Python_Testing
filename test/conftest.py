@@ -32,3 +32,25 @@ def mock_clubs(mocker):
         }
     ]
     mocker.patch.object(server, 'clubs', data)   
+
+@pytest.fixture
+def mock_competitions(mocker):
+    data = [
+        {
+            "name": "Competition 1",
+            "date": "2022-03-20 10:00:00",
+            "numberOfPlaces": "25"
+        },
+        {
+            "name": "Competition 2",
+            "date": "2022-05-22 10:00:00",
+            "numberOfPlaces": "13"
+        },
+        {
+            "name": "Competition 20",
+            "date": "2022-05-22 10:00:00",
+            "numberOfPlaces": "17"
+        }
+    ]
+    mocker.patch.object(server, 'competitions', data)
+    
