@@ -75,3 +75,11 @@ class TestBookCompetition:
         assert context['club'] == mock_clubs[0]
         assert context['competition'] == mock_competitions[2]
         
+        
+class TestDiplayBoard:
+    def test_display_board(self, client, mock_clubs, mock_competitions, captured_templates):
+        response = client.get("/board")
+        template, context = captured_templates[0]
+        assert response.status_code == 200
+        assert template.name == 'board.html'
+        
