@@ -1,6 +1,6 @@
 import pytest
 from app import server
-
+from flask import template_rendered
 
 
 @pytest.fixture
@@ -25,13 +25,15 @@ def mock_clubs(mocker):
             "email": "club1@test.com",
             "points": "10"
         },
+        
         {
             "name": "Club 2",
             "email": "club2@test.com",
             "points": "20"
         }
     ]
-    mocker.patch.object(server, 'clubs', data)   
+    mocker.patch.object(server, 'clubs', data)
+    return data
 
 @pytest.fixture
 def mock_competitions(mocker):
@@ -53,4 +55,17 @@ def mock_competitions(mocker):
         }
     ]
     mocker.patch.object(server, 'competitions', data)
+    return data
     
+@pytest.fixture
+def captured_templates(app):
+    recorded = []
+
+    def record(sender, template, context, **extra):
+        recorded.append((template, context))
+
+    template_rendered.connect(record, app)
+    try:
+        yield recorded
+    finally:
+        template_rendered.disconnect(record, app)

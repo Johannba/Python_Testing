@@ -35,15 +35,21 @@ def showSummary():
         return render_template('index.html')
 
 
-@app.route('/book/<competition>/<club>')
-def book(competition,club):
-    foundClub = [c for c in clubs if c['name'] == club][0]
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
-    if foundClub and foundCompetition:
-        return render_template('booking.html',club=foundClub,competition=foundCompetition)
+@app.route('/book/<competition>/<club>', methods=['GET'])
+def book(competition, club):
+    found_club = [c for c in clubs if c['name'] == club][0]
+    found_competition = [c for c in competitions if c['name'] == competition][0]
+    if found_club and found_competition:
+        if datetime.strptime(competition['date'], '%Y-%m-%d %H:%M:%S') < datetime.now():
+            response = make_response("<p>You cannot book places in a past competition<p>")
+            response.status_code = 302
+            return response
+        else:
+            return render_template('booking.html', club=club, competition=competition)
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
+print(book)
 
 @app.route('/purchasePlaces',methods=['POST'])
 def purchasePlaces():
