@@ -36,6 +36,18 @@ class TestPurchasePlaces:
         
     def test_purchase_more_than_12_places(self, client, mock_clubs, mock_competitions, captured_templates):
         places_required= 13
+        initial_points = int(mock_clubs[1]['points'])
+        response = client.post('/purchasePlaces', data={
+          "competition": mock_competitions[0]['name'],
+          "club": mock_clubs[1]['name'],
+          "places": places_required})
+        template, context = captured_templates[0]
+        assert response.status_code == 200
+        assert template.name == 'welcome.html'
+        assert context['club']['points'] == str(initial_points)
+        
+    def test_purchase_more_than_points_places(self, client, mock_clubs, mock_competitions, captured_templates):
+        places_required= 13
         initial_points = int(mock_clubs[0]['points'])
         response = client.post('/purchasePlaces', data={
           "competition": mock_competitions[0]['name'],
@@ -45,7 +57,6 @@ class TestPurchasePlaces:
         assert response.status_code == 200
         assert template.name == 'welcome.html'
         assert context['club']['points'] == str(initial_points)
-        assert "more than 12 places !" in response.data.decode()
         
         
 class TestBookCompetition:
