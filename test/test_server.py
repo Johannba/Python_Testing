@@ -22,7 +22,7 @@ class TestShowSummary:
         assert 'E-mail is unknown, please enter a valid e-mail !' in response.data.decode()
         
 class TestPurchasePlaces:
-    def test_mise_a_jour_des_points_pas_refletees(self, client, mock_clubs, mock_competitions, captured_templates):
+    def test_purchase_less_than_12_places(self, client, mock_clubs, mock_competitions, captured_templates):
         places_required= 2
         initial_points = int(mock_clubs[0]['points'])
         response = client.post('/purchasePlaces', data={
@@ -32,7 +32,21 @@ class TestPurchasePlaces:
         template, context = captured_templates[0]
         assert response.status_code == 200
         assert template.name == 'welcome.html'
-        assert context['club']['points'] == initial_points - places_required
+        assert context['club']['points'] == str(initial_points - places_required)
+        
+    def test_purchase_more_than_12_places(self, client, mock_clubs, mock_competitions, captured_templates):
+        places_required= 13
+        initial_points = int(mock_clubs[0]['points'])
+        response = client.post('/purchasePlaces', data={
+          "competition": mock_competitions[0]['name'],
+          "club": mock_clubs[0]['name'],
+          "places": places_required})
+        template, context = captured_templates[0]
+        assert response.status_code == 200
+        assert template.name == 'welcome.html'
+        assert context['club']['points'] == str(initial_points)
+        assert "more than 12 places !" in response.data.decode()
+        
         
 class TestBookCompetition:
     def test_not_book_a_old_competition(self, client, mock_clubs, mock_competitions, captured_templates):
