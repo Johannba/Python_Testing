@@ -45,12 +45,12 @@ def mock_competitions(mocker):
         },
         {
             "name": "Competition 2",
-            "date": "2022-05-22 10:00:00",
+            "date": "2020-05-22 10:00:00",
             "numberOfPlaces": "13"
         },
         {
             "name": "Competition 20",
-            "date": "2022-05-22 10:00:00",
+            "date": "2100-05-22 10:00:00",
             "numberOfPlaces": "17"
         }
     ]

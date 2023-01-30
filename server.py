@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 from flask import Flask, make_response,render_template,request,redirect,flash,url_for
 
@@ -40,16 +40,14 @@ def book(competition, club):
     found_club = [c for c in clubs if c['name'] == club][0]
     found_competition = [c for c in competitions if c['name'] == competition][0]
     if found_club and found_competition:
-        if datetime.strptime(competition['date'], '%Y-%m-%d %H:%M:%S') < datetime.now():
-            response = make_response("<p>You cannot book places in a past competition<p>")
-            response.status_code = 302
-            return response
+        if datetime.strptime(found_competition['date'], '%Y-%m-%d %H:%M:%S') < datetime.now():
+            flash("You cannot book places in a past competition")
+            return render_template('welcome.html',club=found_club, clubs=clubs, competitions=competitions)
         else:
-            return render_template('booking.html', club=club, competition=competition)
+            return render_template('booking.html', club=found_club, competition=found_competition)
     else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
-print(book)
+        return render_template('welcome.html',club=found_club, clubs=clubs, competitions=competitions)
 
 @app.route('/purchasePlaces',methods=['POST'])
 def purchasePlaces():

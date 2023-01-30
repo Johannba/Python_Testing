@@ -34,3 +34,19 @@ class TestPurchasePlaces:
         assert template.name == 'welcome.html'
         assert context['club']['points'] == initial_points - places_required
         
+class TestBookCompetition:
+    def test_not_book_a_old_competition(self, client, mock_clubs, mock_competitions, captured_templates):
+        response = client.get(f"/book/{mock_competitions[1]['name']}/{mock_clubs[0]['name']}")
+        template, context = captured_templates[0]
+        assert response.status_code == 200
+        assert template.name == 'welcome.html'
+        assert 'You cannot book places in a past competition' in response.data.decode()
+        
+    def test_book_a_futur_competition(self, client, mock_clubs, mock_competitions, captured_templates):
+        response = client.get(f"/book/{mock_competitions[2]['name']}/{mock_clubs[0]['name']}")
+        template, context = captured_templates[0]
+        assert response.status_code == 200
+        assert template.name == 'booking.html'
+        assert context['club'] == mock_clubs[0]
+        assert context['competition'] == mock_competitions[2]
+        
